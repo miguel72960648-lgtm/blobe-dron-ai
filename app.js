@@ -1,32 +1,167 @@
 /**
- * Blobe - Dron Agropecuario Autónomo con Edge AI
- * Script de interactividad y simulador de telemetría local
+ * Blobe - El Campo, Decodificado
+ * Script de interactividad, efecto Parallax 3D, Consola Interactiva CLI y Sonidos/Cursor de Precisión
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    initCustomCursor(); // Inicializa el cursor de precisión
+    initParallaxHero();
     initScrollReveal();
     initMobileMenu();
-    initTelemetrySimulator();
+    initInteractiveConsole();
 });
 
 /* ==========================================================================
-   1. Animaciones al hacer Scroll (Intersection Observer)
+   0. Sonidos y Audio Context (Web Audio API - Sintetizador Local)
+   ========================================================================== */
+let audioCtx = null;
+
+// Inicializa o retorna el contexto de audio (requiere interacción del usuario)
+function getAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    return audioCtx;
+}
+
+// Reproduce un sonido corto de tecla mecánica de alta precisión
+function playKeySound() {
+    try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        // Sonido tipo click agudo con caída rápida
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1000, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.03);
+        
+        gain.gain.setValueAtTime(0.03, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+        
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.04);
+    } catch (e) {
+        console.warn("Audio Context bloqueado o no soportado:", e);
+    }
+}
+
+// Reproduce un sonido de advertencia tipo sonar industrial (dos beeps cortos ascendentes)
+function playWarningSound() {
+    try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        
+        // Primer Beep
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(660, now);
+        gain1.gain.setValueAtTime(0.08, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        
+        osc1.start(now);
+        osc1.stop(now + 0.12);
+
+        // Segundo Beep (desplazado en tiempo y con frecuencia más aguda)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.08);
+        gain2.gain.setValueAtTime(0.08, now + 0.08);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        
+        osc2.start(now + 0.08);
+        osc2.stop(now + 0.22);
+    } catch (e) {
+        console.warn("Audio Context bloqueado o no soportado:", e);
+    }
+}
+
+/* ==========================================================================
+   0.1. Cursor de Precisión Custom (Seguimiento y Detección)
+   ========================================================================== */
+function initCustomCursor() {
+    // 1. Crear dinámicamente el elemento en el DOM
+    const cursorEl = document.createElement('div');
+    cursorEl.className = 'custom-cursor';
+    cursorEl.id = 'customCursor';
+    document.body.appendChild(cursorEl);
+
+    // 2. Mover el cursor con el mouse
+    window.addEventListener('mousemove', (e) => {
+        cursorEl.style.left = `${e.clientX}px`;
+        cursorEl.style.top = `${e.clientY}px`;
+    }, { passive: true });
+
+    // 3. Activar animación de escaneo al pasar sobre el dron o la consola
+    const scanningTargets = document.querySelectorAll('.drone-sticky-container, .terminal-container');
+    scanningTargets.forEach(target => {
+        target.addEventListener('mouseenter', () => {
+            cursorEl.classList.add('scanning');
+        });
+        target.addEventListener('mouseleave', () => {
+            cursorEl.classList.remove('scanning');
+        });
+    });
+}
+
+/* ==========================================================================
+   1. Efecto Parallax del Hero (Optimizado con requestAnimationFrame)
+   ========================================================================== */
+function initParallaxHero() {
+    const parallaxText = document.getElementById('parallaxText');
+    if (!parallaxText) return;
+
+    let ticking = false;
+
+    const updateParallax = () => {
+        const scrollY = window.scrollY;
+        const heroHeight = window.innerHeight * 3;
+
+        if (scrollY <= heroHeight) {
+            const offset = scrollY * 0.35;
+            parallaxText.style.transform = `translate(-50%, calc(-50% + ${offset}px))`;
+        }
+        ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
+/* ==========================================================================
+   2. Animaciones al hacer Scroll (Intersection Observer)
    ========================================================================== */
 function initScrollReveal() {
     const revealElements = document.querySelectorAll('.scroll-reveal');
     
-    // Opciones del observador
     const observerOptions = {
-        root: null, // viewport del navegador
+        root: null,
         rootMargin: '0px',
-        threshold: 0.12 // El elemento se activa cuando el 12% es visible
+        threshold: 0.1
     };
 
     const revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
-                // Dejamos de observar el elemento una vez revelado
                 observer.unobserve(entry.target);
             }
         });
@@ -38,23 +173,21 @@ function initScrollReveal() {
 }
 
 /* ==========================================================================
-   2. Menú de Navegación Móvil
+   3. Interactividad del Menú de Navegación
    ========================================================================== */
 function initMobileMenu() {
     const menuToggle = document.querySelector('.mobile-menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');
     const mobileLinks = document.querySelectorAll('.mobile-nav-link');
 
-    // Alternar menú al hacer clic en el botón hamburguesa
+    if (!menuToggle || !mobileMenu) return;
+
     menuToggle.addEventListener('click', () => {
         menuToggle.classList.toggle('active');
         mobileMenu.classList.toggle('active');
-        
-        // Bloquear scroll del body al estar activo el menú
         document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
     });
 
-    // Cerrar menú al hacer clic en cualquier enlace
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
             menuToggle.classList.remove('active');
@@ -63,7 +196,6 @@ function initMobileMenu() {
         });
     });
 
-    // Asegurar que el menú se cierre si la ventana se agranda a escritorio
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
             menuToggle.classList.remove('active');
@@ -74,161 +206,298 @@ function initMobileMenu() {
 }
 
 /* ==========================================================================
-   3. Simulador de Telemetría Edge AI
+   4. Consola Interactiva Tipo Linux (CLI en tiempo real)
    ========================================================================== */
-function initTelemetrySimulator() {
+function initInteractiveConsole() {
     const consoleContainer = document.getElementById('terminalConsole');
     const btnStart = document.getElementById('btnStartTelemetry');
     const btnClear = document.getElementById('btnClearTelemetry');
     const statusIndicator = document.getElementById('statusIndicator');
+    const connBadge = document.getElementById('connBadge');
 
-    let isRunning = false;
-    let telemetryTimeout = null;
-    let sequenceIndex = 0;
+    if (!consoleContainer || !btnStart || !btnClear) return;
 
-    // Líneas iniciales que ya están cargadas en el HTML al iniciar la consola
-    const initialHTML = consoleContainer.innerHTML;
+    let isLocked = false;
 
-    // Secuencias de telemetría de simulación
-    const telemetrySequence = [
-        { text: '[sys] Initializing PiCamera2 interface... OK', type: 'info', delay: 800 },
-        { text: '[ai] Warm-up inference complete. Average latency: 28.4ms', type: 'success', delay: 600 },
-        { text: '[cv2] Processing frame stream at 30fps...', type: 'info', delay: 1000 },
-        { text: '[gps] Coordinates: Lat -34.6037, Lng -58.3816 | Altitude: 15.2m', type: 'muted', delay: 1200 },
-        { text: '>> VUELO EN CURSO - Altitud: 15.2m | Velocidad: 4.1m/s | Batería: 88%', type: 'info', delay: 1000 },
-        { text: '<span class="t-yellow">[ALERT] Anomalía detectada: Estrés hídrico en Sector 7B. Probabilidad: 92%</span>', type: 'raw', delay: 1500 },
-        { text: '<span class="t-blue">[nav] Calculando nueva ruta de aspersión... Ajustando yaw/pitch.</span>', type: 'raw', delay: 1000 },
-        { text: '[actuator] Activando válvula solenoide 3 (dosificación focalizada: 15ml/s)', type: 'success', delay: 1200 },
-        { text: '[actuator] Aspersión completada en Sector 7B. Cerrando válvula.', type: 'info', delay: 800 },
-        { text: '[gps] Coordinates: Lat -34.6039, Lng -58.3819 | Altitude: 15.0m', type: 'muted', delay: 1200 },
-        { text: '>> VUELO EN CURSO - Altitud: 15.0m | Velocidad: 3.8m/s | Batería: 85%', type: 'info', delay: 1000 },
-        { text: '[cv2] Hojas analizadas: 412 | Índice de salud promedio (NDVI): 0.78', type: 'info', delay: 1400 },
-        { text: '<span class="t-red">[ALERT] Foco de plaga detectado (Aphis gossypii) en Sector 3A. Probabilidad: 97%</span>', type: 'raw', delay: 1600 },
-        { text: '<span class="t-blue">[nav] Iniciando barrido orbital sobre el Sector 3A para mapeo de daño foliar.</span>', type: 'raw', delay: 1000 },
-        { text: '[ai] Segmentando hojas en busca de ninfas... Detección afirmativa.', type: 'info', delay: 1200 },
-        { text: '[actuator] Aplicando dosis ultra-baja (ULV) de agente biológico. Duración: 3.5s', type: 'success', delay: 1500 },
-        { text: '>> VUELO EN CURSO - Altitud: 12.5m | Velocidad: 1.5m/s | Batería: 81%', type: 'info', delay: 1000 },
-        { text: '[cv2] Tratamiento completado. Reanudando trayectoria original de barrido.', type: 'info', delay: 900 },
-        { text: '[gps] Coordinates: Lat -34.6045, Lng -58.3822 | Altitude: 15.0m', type: 'muted', delay: 1200 },
-        { text: '[gps] Fin de ruta programada. Retornando a base (RTL)...', type: 'info', delay: 1000 },
-        { text: '>> VUELO EN CURSO - Altitud: 15.0m | Velocidad: 5.5m/s | Batería: 78%', type: 'info', delay: 1000 },
-        { text: '[sys] Aproximación a helipuerto de carga... Iniciando maniobra de precisión.', type: 'info', delay: 1200 },
-        { text: '[sys] Altitud: 2.5m ... 1.0m ... 0.1m', type: 'muted', delay: 1500 },
-        { text: '<span class="t-green">[SUCCESS] Aterrizaje autónomo exitoso. Conectando estación de recarga inductiva.</span>', type: 'raw', delay: 1000 },
-        { text: '<span class="t-green">[SUCCESS] Misión de campo completada. Log exportado a /var/log/blobe/mission_0417.log</span>', type: 'raw', delay: 800 }
-    ];
+    // Crear e inyectar el input invisible
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'text';
+    hiddenInput.id = 'terminalHiddenInput';
+    hiddenInput.autocomplete = 'off';
+    hiddenInput.autocorrect = 'off';
+    hiddenInput.autocapitalize = 'off';
+    hiddenInput.spellcheck = false;
+    
+    Object.assign(hiddenInput.style, {
+        position: 'absolute',
+        width: '1px',
+        height: '1px',
+        opacity: '0',
+        pointerEvents: 'none',
+        zIndex: '-1'
+    });
+    consoleContainer.appendChild(hiddenInput);
 
-    // Iniciar o detener la telemetría
-    btnStart.addEventListener('click', () => {
-        if (!isRunning) {
-            startSimulation();
-        } else {
-            stopSimulation();
+    // Mensaje inicial de la consola
+    consoleContainer.innerHTML = `
+        <p class="terminal-line t-muted">&gt; System initialized. Awaiting RF command link...</p>
+        <p class="terminal-line t-muted">&gt; Escribe 'help' para ver los comandos disponibles.</p>
+    `;
+    consoleContainer.appendChild(hiddenInput);
+    appendPromptLine();
+
+    // Eventos de Foco
+    consoleContainer.addEventListener('click', () => {
+        if (!isLocked) {
+            hiddenInput.focus();
+            highlightCursor();
         }
     });
 
-    // Limpiar consola
-    btnClear.addEventListener('click', () => {
-        consoleContainer.innerHTML = '';
-        btnClear.disabled = true;
-        // Reiniciar la secuencia
-        sequenceIndex = 0;
-    });
+    hiddenInput.addEventListener('focus', highlightCursor);
+    hiddenInput.addEventListener('blur', removeCursorHighlight);
 
-    function startSimulation() {
-        isRunning = true;
-        btnStart.textContent = 'Detener Simulación';
-        btnStart.classList.remove('btn-secondary');
-        btnStart.classList.add('btn-primary');
-        btnClear.disabled = true;
-        
-        statusIndicator.textContent = 'Ejecutando';
-        statusIndicator.className = 'status-on';
-
-        // Si la consola está vacía, restablecer o dar formato inicial
-        if (consoleContainer.innerHTML === '') {
-            consoleContainer.innerHTML = `<p class="terminal-line"><span class="t-green">pi@blobe-drone-edge</span>:<span class="t-blue">~</span>$ python3 blobe_inference_engine.py --mode autonomous</p>`;
-        }
-
-        // Ejecutar primer paso de telemetría
-        runNextTelemetryLine();
-    }
-
-    function stopSimulation() {
-        isRunning = false;
-        btnStart.textContent = 'Iniciar Vuelo Simulado';
-        btnStart.classList.remove('btn-primary');
-        btnStart.classList.add('btn-secondary');
-        btnClear.disabled = false;
-
-        statusIndicator.textContent = 'Apagado';
-        statusIndicator.className = 'status-off';
-
-        if (telemetryTimeout) {
-            clearTimeout(telemetryTimeout);
-        }
-    }
-
-    function runNextTelemetryLine() {
-        if (!isRunning) return;
-
-        // Si ya terminamos la secuencia, detener la simulación o reiniciarla
-        if (sequenceIndex >= telemetrySequence.length) {
-            appendCommandLine('[sys] Sistema en reposo. Esperando nuevas directivas.');
-            stopSimulation();
-            sequenceIndex = 0; // Reiniciar para la próxima
+    // Capturar la escritura (Activa sonido de teclado)
+    hiddenInput.addEventListener('input', (e) => {
+        if (isLocked) {
+            hiddenInput.value = '';
             return;
         }
-
-        const step = telemetrySequence[sequenceIndex];
         
-        telemetryTimeout = setTimeout(() => {
-            if (step.type === 'raw') {
-                appendCommandLine(step.text);
+        const currentLineInputText = consoleContainer.querySelector('.current-prompt-line .input-text');
+        if (currentLineInputText) {
+            currentLineInputText.textContent = e.target.value;
+        }
+        autoScroll();
+    });
+
+    // Capturar teclas (Enter y clics de teclado)
+    hiddenInput.addEventListener('keydown', async (e) => {
+        if (isLocked) return;
+
+        // Sonido de clic en teclas válidas de escritura
+        if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
+            playKeySound();
+        }
+
+        if (e.key === 'Enter') {
+            const command = hiddenInput.value.trim().toLowerCase();
+            hiddenInput.value = ''; // Limpiar el input
+
+            finalizeCurrentPromptLine(command);
+
+            if (command !== '') {
+                await executeCommand(command);
             } else {
-                let cssClass = 't-muted';
-                if (step.type === 'info') cssClass = '';
-                if (step.type === 'success') cssClass = 't-green';
-                
-                // Formatear línea estándar con fecha actual
-                const timestamp = getFormattedTimestamp();
-                const prefix = step.type === 'success' ? '[SUCCESS]' : '[INFO]';
-                appendCommandLine(`<span class="${cssClass}">${prefix} ${timestamp} - ${step.text}</span>`);
+                appendPromptLine();
             }
-            
-            sequenceIndex++;
-            runNextTelemetryLine(); // Llamar recursivamente para la siguiente línea
-        }, step.delay);
+        }
+    });
+
+    // Botones físicos
+    btnStart.addEventListener('click', async () => {
+        if (isLocked) return;
+        
+        playKeySound();
+        const currentLineInputText = consoleContainer.querySelector('.current-prompt-line .input-text');
+        if (currentLineInputText) {
+            currentLineInputText.textContent = './start_yolo.sh';
+        }
+        finalizeCurrentPromptLine('./start_yolo.sh');
+        await executeCommand('./start_yolo.sh');
+    });
+
+    btnClear.addEventListener('click', () => {
+        if (isLocked) return;
+        playKeySound();
+        clearConsole();
+    });
+
+    /* --- Funciones de Lógica de Comandos --- */
+
+    async function executeCommand(cmd) {
+        switch (cmd) {
+            case 'help':
+                printOutput(`Comandos disponibles:
+  status            Muestra el estado del dron y sensores de la Pi.
+  clear             Limpia el historial de salida de la pantalla.
+  ./start_yolo.sh   Ejecuta la IA de detección visual local.`);
+                appendPromptLine();
+                break;
+
+            case 'status':
+                printOutput(`[STATUS REPORT // BLOBE-EDGE]
+--------------------------------------------------
+Dron: STANDBY (Listo para despegue)
+Batería: 88% (Voltaje nominal: 14.8V)
+GPS: LOCK (12 satélites conectados, Precisión: 0.8m)
+Cerebro: Raspberry Pi 5 (CPU Temp: 48°C)
+Cámara: IMX500 Multiespectral (Estado: OK)
+Inferencia: YOLOv8n_agri.onnx cargado`);
+                appendPromptLine();
+                break;
+
+            case 'clear':
+                clearConsole();
+                break;
+
+            case './start_yolo.sh':
+                await runYoloSimulation();
+                break;
+
+            default:
+                printOutput(`<span class="t-red">bash: ${escapeHTML(cmd)}: command not found. Escribe 'help' para opciones.</span>`, true);
+                appendPromptLine();
+                break;
+        }
     }
 
-    // Agrega una línea de comando y hace scroll automático
-    function appendCommandLine(htmlContent) {
+    // Simulación progresiva usando Async/Await con avisos sonoros
+    async function runYoloSimulation() {
+        lockInput(true);
+        
+        statusIndicator.textContent = 'RUNNING';
+        statusIndicator.className = 'status-on';
+        
+        connBadge.textContent = 'CONNECTED';
+        connBadge.classList.add('connected');
+
+        await delay(800);
+        printOutput('[SYS] Mount multiespectral camera... OK');
+        
+        await delay(600);
+        printOutput('[SYS] Connecting flight controller ROS 2 nodes... OK');
+
+        await delay(700);
+        printOutput('[AI] Loading YOLOv8n weights into RAM... 412ms');
+
+        await delay(600);
+        printOutput('[AI] Model loaded on NPU. Warm-up successful.', 'success');
+
+        await delay(1000);
+        printOutput('[CV] Processing frames at 30fps...');
+
+        await delay(1200);
+        printOutput('<span class="t-yellow">[WARN] Estrés hídrico detectado. Recalculando ruta...</span>', true);
+        playWarningSound(); // Alerta auditiva sintética
+
+        await delay(1000);
+        printOutput('<span class="t-blue">[NAV] Ajustando yaw/pitch y ralentizando vuelo a 2m/s.</span>', true);
+
+        await delay(1300);
+        printOutput('[ACTUATOR] Activando válvula solenoide de pulverización focalizada', 'success');
+
+        await delay(1500);
+        printOutput('[ACTUATOR] Pulverización completada en zona afectada.');
+
+        await delay(1000);
+        printOutput('>> MISSION COMPLETE. Returning to Launch (RTL).');
+
+        await delay(800);
+        printOutput('<span class="t-green">[SUCCESS] Aterrizaje autónomo seguro. Log guardado en /var/log/blobe/yolo.log</span>', true);
+
+        lockInput(false);
+        appendPromptLine();
+    }
+
+    /* --- Helpers de la Terminal --- */
+
+    function appendPromptLine() {
+        consoleContainer.appendChild(hiddenInput);
+        hiddenInput.value = '';
+
         const line = document.createElement('p');
-        line.className = 'terminal-line';
-        line.innerHTML = htmlContent;
+        line.className = 'terminal-line current-prompt-line';
+        line.innerHTML = `<span class="t-green">pi@blobe-edge</span>:<span class="t-blue">~</span>$ <span class="input-text"></span><span class="terminal-cursor"></span>`;
         consoleContainer.appendChild(line);
         
-        // Mantener cursor al final (removiéndolo si existía antes)
-        const oldCursor = consoleContainer.querySelector('.terminal-cursor');
-        if (oldCursor) oldCursor.remove();
-        
-        const cursorSpan = document.createElement('span');
-        cursorSpan.className = 'terminal-cursor';
-        consoleContainer.appendChild(cursorSpan);
+        if (document.activeElement === hiddenInput) {
+            highlightCursor();
+        }
+        autoScroll();
+    }
 
-        // Auto-scroll hacia abajo
+    function finalizeCurrentPromptLine(enteredText) {
+        const currentLine = consoleContainer.querySelector('.current-prompt-line');
+        if (currentLine) {
+            currentLine.innerHTML = `<span class="t-green">pi@blobe-edge</span>:<span class="t-blue">~</span>$ <span class="t-white">${escapeHTML(enteredText)}</span>`;
+            currentLine.classList.remove('current-prompt-line');
+        }
+    }
+
+    function printOutput(text, isHTML = false) {
+        const line = document.createElement('p');
+        line.className = 'terminal-line';
+        
+        if (isHTML) {
+            line.innerHTML = `&gt; ${text}`;
+        } else {
+            const formattedText = escapeHTML(text).replace(/\n/g, '<br>');
+            line.innerHTML = `&gt; ${formattedText}`;
+        }
+        
+        consoleContainer.appendChild(line);
+        autoScroll();
+    }
+
+    function clearConsole() {
+        consoleContainer.innerHTML = '';
+        consoleContainer.appendChild(hiddenInput);
+        appendPromptLine();
+        btnClear.disabled = true;
+    }
+
+    function lockInput(lock) {
+        isLocked = lock;
+        if (lock) {
+            hiddenInput.blur();
+            btnStart.disabled = true;
+            btnClear.disabled = true;
+        } else {
+            btnStart.disabled = false;
+            btnClear.disabled = false;
+            
+            statusIndicator.textContent = 'STANDBY';
+            statusIndicator.className = 'status-off';
+            
+            connBadge.textContent = 'DISCONNECTED';
+            connBadge.classList.remove('connected');
+            
+            hiddenInput.focus();
+        }
+    }
+
+    function highlightCursor() {
+        const cursor = consoleContainer.querySelector('.current-prompt-line .terminal-cursor');
+        if (cursor) {
+            cursor.style.display = 'inline-block';
+        }
+    }
+
+    function removeCursorHighlight() {
+        const cursor = consoleContainer.querySelector('.current-prompt-line .terminal-cursor');
+        if (cursor) {
+            cursor.style.display = 'none';
+        }
+    }
+
+    function autoScroll() {
         consoleContainer.scrollTop = consoleContainer.scrollHeight;
     }
 
-    // Generar timestamp con formato YYYY-MM-DD HH:MM:SS
-    function getFormattedTimestamp() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag)
+        );
     }
 }

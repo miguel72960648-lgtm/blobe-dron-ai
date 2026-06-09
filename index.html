@@ -3,40 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blobe - Dron Agropecuario Autónomo con Edge AI</title>
-    <meta name="description" content="Presentación del proyecto final de ingeniería: Blobe, un dron autónomo para agricultura de precisión impulsado por inteligencia artificial local en Raspberry Pi.">
-    <!-- Google Fonts: Outfit (headings) & Inter (body) -->
+    <title>Blobe - El Campo, Decodificado | Dron Agropecuario con Edge AI</title>
+    <meta name="description" content="Blobe es un dron autónomo ultra-premium para agricultura de precisión, impulsado por una Raspberry Pi con Edge AI.">
+    <!-- Google Fonts: Space Grotesk (headings), Space Mono (HUD/Tech), Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="light-mode">
 
-    <!-- Menú de Navegación -->
+    <!-- Menú de Navegación Minimalista (Invisible o Integrado con el HUD en el Hero, pero visible al hacer Scroll) -->
     <header class="navbar-container">
         <div class="navbar-content max-width-container">
             <a href="#" class="logo">
-                <span class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                </span>
-                <span class="logo-text">Blobe</span>
+                <span class="logo-text">BLOBE</span>
             </a>
             <nav class="nav-links">
-                <a href="#hero" class="nav-link active">Inicio</a>
-                <a href="#tecnica" class="nav-link">Especificaciones</a>
-                <a href="#beneficios" class="nav-link">Beneficios</a>
-                <a href="#telemetria" class="nav-link">Telemetría</a>
+                <a href="#hero" class="nav-link active">INICIO</a>
+                <a href="#tecnica" class="nav-link">ESPECIFICACIONES</a>
+                <a href="#beneficios" class="nav-link">BENEFICIOS</a>
+                <a href="#telemetria" class="nav-link">TELEMETRÍA</a>
             </nav>
             <div class="navbar-actions">
-                <a href="#telemetria" class="btn btn-secondary">Simulación</a>
+                <a href="#telemetria" class="btn btn-secondary">SIMULAR</a>
             </div>
             <!-- Botón de menú móvil -->
-            <button class="mobile-menu-toggle" aria-label="Abrir menú de navegación">
-                <span></span>
+            <button class="mobile-menu-toggle" aria-label="Abrir menú">
                 <span></span>
                 <span></span>
             </button>
@@ -45,305 +39,275 @@
 
     <!-- Menú Móvil Desplegable -->
     <div class="mobile-menu">
-        <a href="#hero" class="mobile-nav-link">Inicio</a>
-        <a href="#tecnica" class="mobile-nav-link">Especificaciones</a>
-        <a href="#beneficios" class="mobile-nav-link">Beneficios</a>
-        <a href="#telemetria" class="mobile-nav-link">Telemetría</a>
-        <a href="#telemetria" class="btn btn-secondary mobile-btn">Simulación</a>
+        <a href="#hero" class="mobile-nav-link">INICIO</a>
+        <a href="#tecnica" class="mobile-nav-link">ESPECIFICACIONES</a>
+        <a href="#beneficios" class="mobile-nav-link">BENEFICIOS</a>
+        <a href="#telemetria" class="mobile-nav-link">TELEMETRÍA</a>
+        <a href="#telemetria" class="btn btn-secondary mobile-btn">SIMULAR</a>
     </div>
 
-    <!-- Hero Section -->
+    <!-- Hero Section con Capas Sticky y Parallax -->
     <section id="hero" class="hero-section">
-        <div class="hero-bg-overlay"></div>
-        <div class="hero-grid max-width-container">
-            <div class="hero-content scroll-reveal">
-                <div class="badge">Proyecto Final de Ingeniería</div>
-                <h1 class="hero-title">
-                    Inteligencia Artificial <br>
-                    <span class="gradient-text">en el Aire</span>
-                </h1>
-                <p class="hero-description">
-                    Blobe es un dron agropecuario autónomo diseñado para la agricultura de precisión. Su cerebro es una <strong>Raspberry Pi</strong> que ejecuta IA de manera local (Edge Computing) para tomar decisiones de cultivo críticas en tiempo real, sin depender de la nube.
-                </p>
-                <div class="hero-cta-group">
-                    <a href="#tecnica" class="btn btn-primary">
-                        Ver Tecnología
-                        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </a>
-                    <a href="#telemetria" class="btn btn-tertiary">Probar Consola</a>
+        <div class="hero-sticky-container">
+            <!-- Capa 1: Texto Masivo de Fondo (z-index: 1) -->
+            <div class="bg-massive-text" id="parallaxText">
+                EL&nbsp;CAMPO,<br>DECODIFICADO.
+            </div>
+
+            <!-- Capa 2: Dron Central (z-index: 2) -->
+            <div class="drone-sticky-container">
+                <div class="drone-illustration">
+                    <!-- SVG de Dron Minimalista Ultra-Premium en color Negro -->
+                    <svg class="drone-svg" viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Hélices de Fondo (Giran en direcciones opuestas) -->
+                        <!-- Trasera Izquierda -->
+                        <line x1="45" y1="72" x2="105" y2="72" stroke="#000000" stroke-width="1.5" opacity="0.3" class="propeller prop-back-left"/>
+                        <!-- Trasera Derecha -->
+                        <line x1="215" y1="72" x2="275" y2="72" stroke="#000000" stroke-width="1.5" opacity="0.3" class="propeller prop-back-right"/>
+                        
+                        <!-- Brazos de Carbono -->
+                        <path d="M110 110 L55 85" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M210 110 L265 85" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M110 110 L65 145" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M210 110 L255 145" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+
+                        <!-- Cuerpo Principal Monolítico -->
+                        <rect x="100" y="85" width="120" height="50" rx="25" fill="#000000" class="drone-chassis"/>
+                        <rect x="115" y="95" width="90" height="30" rx="15" fill="#111111"/>
+                        
+                        <!-- Lente de Cámara / Sensor Multiespectral -->
+                        <circle cx="160" cy="110" r="14" fill="#000000" stroke="#FFFFFF" stroke-width="2"/>
+                        <circle cx="160" cy="110" r="6" fill="#10B981" class="camera-lens"/> <!-- Destello de color verde -->
+                        
+                        <!-- Motores y Hélices Principales -->
+                        <!-- Delantera Izquierda -->
+                        <rect x="47" y="75" width="16" height="12" rx="2" fill="#111111"/>
+                        <line x1="25" y1="77" x2="85" y2="77" stroke="#000000" stroke-width="2.5" class="propeller prop-front-left"/>
+                        
+                        <!-- Delantera Derecha -->
+                        <rect x="257" y="75" width="16" height="12" rx="2" fill="#111111"/>
+                        <line x1="235" y1="77" x2="295" y2="77" stroke="#000000" stroke-width="2.5" class="propeller prop-front-right"/>
+
+                        <!-- Trasera Inferior Izquierda -->
+                        <rect x="57" y="139" width="16" height="12" rx="2" fill="#111111"/>
+                        <line x1="35" y1="141" x2="95" y2="141" stroke="#000000" stroke-width="2.5" class="propeller prop-bottom-left"/>
+
+                        <!-- Trasera Inferior Derecha -->
+                        <rect x="247" y="139" width="16" height="12" rx="2" fill="#111111"/>
+                        <line x1="225" y1="141" x2="285" y2="141" stroke="#000000" stroke-width="2.5" class="propeller prop-bottom-right"/>
+                    </svg>
                 </div>
             </div>
-            <div class="hero-visual scroll-reveal">
-                <div class="drone-canvas-wrapper">
-                    <!-- Ilustración interactiva o animación CSS del dron Blobe -->
-                    <div class="drone-glow"></div>
-                    <div class="drone-illustration">
-                        <!-- Estructura del dron en SVG -->
-                        <svg class="drone-svg" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Rayos de detección agrícola (efecto escáner) -->
-                            <path class="scanner-cone" d="M150 100 L30 190 L270 190 Z" fill="url(#scannerGradient)" opacity="0.35"/>
-                            <!-- Líneas de cuadrícula del escáner en el suelo -->
-                            <ellipse cx="150" cy="185" rx="120" ry="10" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6 4" class="scanner-ellipse"/>
-                            <line x1="30" y1="185" x2="270" y2="185" stroke="#10B981" stroke-width="0.5" opacity="0.5" />
-                            
-                            <!-- Cuerpo Principal del Dron -->
-                            <rect x="110" y="85" width="80" height="30" rx="15" fill="#111827" stroke="#10B981" stroke-width="2" class="drone-body"/>
-                            <circle cx="150" cy="100" r="10" fill="#10B981" class="drone-eye"/>
-                            <circle cx="150" cy="100" r="4" fill="#FFFFFF" class="drone-eye-inner"/>
-                            
-                            <!-- Brazos del Dron -->
-                            <path d="M110 100 L60 90 M190 100 L240 90 M110 100 L70 115 M190 100 L230 115" stroke="#374151" stroke-width="4" stroke-linecap="round"/>
-                            
-                            <!-- Motores y Hélices -->
-                            <!-- Arriba Izquierda -->
-                            <rect x="52" y="80" width="16" height="10" rx="2" fill="#1F2937" stroke="#10B981" stroke-width="1"/>
-                            <line x1="30" y1="82" x2="90" y2="82" stroke="#94A3B8" stroke-width="2" class="propeller prop-left-top"/>
-                            <!-- Arriba Derecha -->
-                            <rect x="232" y="80" width="16" height="10" rx="2" fill="#1F2937" stroke="#10B981" stroke-width="1"/>
-                            <line x1="210" y1="82" x2="270" y2="82" stroke="#94A3B8" stroke-width="2" class="propeller prop-right-top"/>
-                            <!-- Abajo Izquierda -->
-                            <rect x="62" y="110" width="16" height="10" rx="2" fill="#1F2937" stroke="#10B981" stroke-width="1"/>
-                            <line x1="40" y1="112" x2="100" y2="112" stroke="#94A3B8" stroke-width="2" class="propeller prop-left-bottom"/>
-                            <!-- Abajo Derecha -->
-                            <rect x="222" y="110" width="16" height="10" rx="2" fill="#1F2937" stroke="#10B981" stroke-width="1"/>
-                            <line x1="200" y1="112" x2="260" y2="112" stroke="#94A3B8" stroke-width="2" class="propeller prop-right-bottom"/>
 
-                            <!-- Definición de Gradientes -->
-                            <defs>
-                                <linearGradient id="scannerGradient" x1="150" y1="100" x2="150" y2="190" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#10B981" stop-opacity="0.8"/>
-                                    <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                        
-                        <!-- Nodo indicador flotante para Raspberry Pi Brain -->
-                        <div class="tech-tag tag-brain">
-                            <span class="pulse-dot"></span>
-                            Raspberry Pi Brain
-                        </div>
-                    </div>
+            <!-- Capa 3: HUD Overlay (z-index: 3) -->
+            <div class="hero-hud-overlay">
+                <!-- Esquina Superior Izquierda: Logo Tipográfico -->
+                <div class="hud-item hud-top-left font-mono">
+                    <span class="hud-logo">BLOBE</span>
+                </div>
+                
+                <!-- Esquina Superior Derecha: Rumbo Estático -->
+                <div class="hud-item hud-top-right font-mono">
+                    188° S (RUMBO)
+                </div>
+                
+                <!-- Esquina Inferior Izquierda: Coordenadas y Párrafo Técnico -->
+                <div class="hud-item hud-bottom-left font-mono">
+                    <div class="hud-coords">LAT: 19° 17' 17" N | LON: 99° 40' 41" W</div>
+                    <p class="hud-description">
+                        Flotas de drones controladas por IA que ven, deciden y actúan desde arriba, en tiempo real.
+                    </p>
+                </div>
+                
+                <!-- Esquina Inferior Derecha: Indicador de Scroll Animado -->
+                <div class="hud-item hud-bottom-right font-mono scroll-indicator">
+                    <span>SCROLL</span>
+                    <span class="scroll-dot-container">
+                        <span class="scroll-dot"></span>
+                    </span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección Técnica (Hardware & Edge Computing) -->
+    <!-- Sección Técnica (Diseño Industrial Minimalista) -->
     <section id="tecnica" class="technical-section section-padding">
         <div class="max-width-container">
             <div class="section-header scroll-reveal">
-                <span class="section-subtitle">Arquitectura de Ingeniería</span>
-                <h2 class="section-title">Procesamiento Local Inteligente</h2>
+                <span class="section-subtitle font-mono">01 // ARQUITECTURA DE INGENIERÍA</span>
+                <h2 class="section-title">El cerebro en el borde</h2>
                 <p class="section-description">
-                    Al trasladar el procesamiento de datos del servidor central al propio hardware del dron (Edge Computing), Blobe elimina la latencia y la necesidad de conexión constante en zonas rurales de difícil cobertura.
+                    Blobe integra hardware dedicado para procesamiento local, eliminando la latencia en transmisiones y garantizando la autonomía total en entornos sin cobertura de red.
                 </p>
             </div>
 
-            <!-- Grid de Tarjetas Técnicas -->
+            <!-- Grid Técnico Minimalista (Solo líneas finas y alto contraste) -->
             <div class="technical-grid">
                 <!-- Tarjeta 1: Edge AI Brain -->
                 <div class="tech-card scroll-reveal">
                     <div class="card-icon-container">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                            <path d="M20 10v4M4 10v4"></path>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <line x1="15" y1="3" x2="15" y2="21"></line>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="3" y1="15" x2="21" y2="15"></line>
                         </svg>
                     </div>
-                    <h3 class="card-title">Edge AI Brain</h3>
+                    <h3 class="card-title">Raspberry Pi CPU</h3>
                     <p class="card-text">
-                        Una computadora de placa única <strong>Raspberry Pi</strong> procesa datos provenientes de múltiples sensores en tiempo real. La red neuronal está optimizada para hardware embebido de bajo consumo.
+                        Ejecución local de modelos convolucionales de clasificación directamente a bordo. Sin peticiones de red, sin pérdida de paquetes.
                     </p>
-                    <div class="card-spec">CPU ARM 64-bit | Local Inferencing</div>
+                    <div class="card-spec font-mono">ARM CORTEX-A76 / LOCAL INFERENCE</div>
                 </div>
 
                 <!-- Tarjeta 2: Vision Artificial -->
                 <div class="tech-card scroll-reveal">
                     <div class="card-icon-container">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                            <circle cx="12" cy="13" r="4"></circle>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                     </div>
                     <h3 class="card-title">Computer Vision</h3>
                     <p class="card-text">
-                        Equipado con cámaras multiespectrales, el dron utiliza modelos convolucionales (CNN) ligeros para detectar deficiencias de nitrógeno, estrés hídrico y plagas en las hojas a medida que vuela.
+                        Detección en tiempo real de anomalías cromáticas, estrés hídrico e infestaciones a través de cámaras multiespectrales de alta definición.
                     </p>
-                    <div class="card-spec">YOLOv8-Nano | Detección 30 FPS</div>
+                    <div class="card-spec font-mono">YOLOV8-NANO / 30 FPS REAL-TIME</div>
                 </div>
 
                 <!-- Tarjeta 3: Autopilot Autónomo -->
                 <div class="tech-card scroll-reveal">
                     <div class="card-icon-container">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
                         </svg>
                     </div>
                     <h3 class="card-title">Autopilot Adaptativo</h3>
                     <p class="card-text">
-                        En base a la información visual obtenida, el autopiloto puede alterar su curso o ajustar la altitud dinámicamente para hacer pasadas detalladas sobre zonas afectadas o detener la pulverización.
+                        Toma de decisiones de navegación dinámica. Ajuste del plan de vuelo y de aspersión basado en las inferencias en tiempo real de la IA local.
                     </p>
-                    <div class="card-spec">Controlador PID + ROS 2</div>
+                    <div class="card-spec font-mono">ROS 2 INTEGRATION / PID CONTROL</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección Beneficios Agrícolas -->
+    <!-- Sección Beneficios Agrícolas (Minimalista y Espaciado) -->
     <section id="beneficios" class="benefits-section section-padding">
-        <!-- Fondo geométrico decorativo -->
-        <div class="benefits-bg-glow"></div>
         <div class="max-width-container">
             <div class="section-header scroll-reveal">
-                <span class="section-subtitle">Impacto en el Campo</span>
-                <h2 class="section-title">Agricultura de Precisión Sostenible</h2>
+                <span class="section-subtitle font-mono">02 // IMPACTO AGRÓNOMO</span>
+                <h2 class="section-title">Eficiencia en el campo</h2>
                 <p class="section-description">
-                    Blobe transforma la gestión de cultivos tradicionales en una operación inteligente y con base científica, reduciendo drásticamente el desperdicio de insumos.
+                    La automatización y la inteligencia espacial permiten una reducción crítica en el uso de insumos, promoviendo una agricultura más ecológica y de menor coste.
                 </p>
             </div>
 
             <div class="benefits-layout">
-                <!-- Beneficio 1: Pulverización Focalizada -->
+                <!-- Beneficio 1: Dosificación Quirúrgica -->
                 <div class="benefit-item scroll-reveal">
                     <div class="benefit-visual">
-                        <!-- Icono de atomización/agua -->
-                        <div class="benefit-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                        </div>
+                        <span class="benefit-number font-mono">02.1</span>
                     </div>
                     <div class="benefit-content">
-                        <h3 class="benefit-title">Aplicación Focalizada</h3>
+                        <h3 class="benefit-title">Dosificación Quirúrgica</h3>
                         <p class="benefit-description">
-                            En lugar de rociar agroquímicos sobre hectáreas completas, Blobe dosifica fertilizantes y pesticidas exclusivamente sobre las plantas identificadas con problemas de salud.
+                            Rociado focalizado basado en la localización de plagas, logrando proteger zonas vulnerables sin saturar el terreno de químicos innecesarios.
                         </p>
-                        <span class="benefit-stat">-85% de uso de químicos</span>
+                        <span class="benefit-stat font-mono">-85% AGROQUÍMICOS</span>
                     </div>
                 </div>
 
-                <!-- Beneficio 2: Detección Temprana de Plagas -->
+                <!-- Beneficio 2: Detección Temprana -->
                 <div class="benefit-item scroll-reveal">
                     <div class="benefit-visual">
-                        <!-- Icono de lupa y hoja -->
-                        <div class="benefit-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                                <path d="M7 12h10"/>
-                                <path d="M12 7v10"/>
-                            </svg>
-                        </div>
+                        <span class="benefit-number font-mono">02.2</span>
                     </div>
                     <div class="benefit-content">
-                        <h3 class="benefit-title">Diagnóstico Preventivo</h3>
+                        <h3 class="benefit-title">Detección Temprana</h3>
                         <p class="benefit-description">
-                            Identifica plagas en sus etapas iniciales antes de que se propaguen. La IA local analiza patrones de coloración foliar y anomalías geométricas con alta fidelidad.
+                            Identificación de anomalías foliares a nivel de planta individual antes de que el daño se extienda al resto del lote.
                         </p>
-                        <span class="benefit-stat">Detección temprana al 94%</span>
+                        <span class="benefit-stat font-mono">94% DE PRECISIÓN</span>
                     </div>
                 </div>
 
-                <!-- Beneficio 3: Mapeo de Salud Multi-espectral -->
+                <!-- Beneficio 3: Mapeo NDVI Local -->
                 <div class="benefit-item scroll-reveal">
                     <div class="benefit-visual">
-                        <!-- Icono de mapa/salud -->
-                        <div class="benefit-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18"></path>
-                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-                            </svg>
-                        </div>
+                        <span class="benefit-number font-mono">02.3</span>
                     </div>
                     <div class="benefit-content">
-                        <h3 class="benefit-title">Índices de Salud (NDVI)</h3>
+                        <h3 class="benefit-title">Mapeo NDVI Inmediato</h3>
                         <p class="benefit-description">
-                            Genera mapas del estado de fotosíntesis de las plantas mediante luz reflejada. Estos datos se procesan localmente para exportar reportes directos al agricultor.
+                            Procesamiento de imágenes multiespectrales directamente a bordo. Los mapas de vegetación se entregan al instante sin requerir subida a la nube.
                         </p>
-                        <span class="benefit-stat">Reportes instantáneos</span>
+                        <span class="benefit-stat font-mono">CERO TRANSFERENCIA NUBE</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección de Simulación de Telemetría Edge AI -->
+    <!-- Sección de Simulación de Telemetría (Estilo Panel de Control DJI) -->
     <section id="telemetria" class="telemetry-section section-padding">
         <div class="max-width-container">
             <div class="section-header scroll-reveal">
-                <span class="section-subtitle">Prueba de Concepto</span>
-                <h2 class="section-title">Consola de Telemetría local</h2>
+                <span class="section-subtitle font-mono">03 // MÓDULO DE PRUEBA</span>
+                <h2 class="section-title">Consola de telemetría a bordo</h2>
                 <p class="section-description">
-                    Simulación interactiva de la salida del terminal de la Raspberry Pi 4/5 a bordo de Blobe mientras realiza un vuelo de inspección y ejecuta detección de plagas.
+                    Ejecuta un diagnóstico simulado de la Raspberry Pi de Blobe para observar las salidas de inferencia local en tiempo real durante una misión típica.
                 </p>
             </div>
 
-            <!-- Terminal Mockup de la Raspberry Pi -->
+            <!-- Consola Minimalista Premium (Fondo claro/blanco en este pivot) -->
             <div class="terminal-container scroll-reveal">
                 <div class="terminal-header">
-                    <div class="terminal-buttons">
-                        <span class="btn-term close"></span>
-                        <span class="btn-term minimize"></span>
-                        <span class="btn-term expand"></span>
-                    </div>
-                    <span class="terminal-title">pi@blobe-drone-edge:~</span>
-                    <span class="terminal-connection-badge">En Línea via RF</span>
+                    <span class="terminal-title font-mono">CORE_INFERENCE_ENGINE // RASPBERRY_PI_5</span>
+                    <span class="terminal-connection-badge font-mono" id="connBadge">DISCONNECTED</span>
                 </div>
-                <div class="terminal-body" id="terminalConsole">
-                    <p class="terminal-line"><span class="t-green">pi@blobe-drone-edge</span>:<span class="t-blue">~</span>$ python3 blobe_inference_engine.py --mode autonomous</p>
-                    <p class="terminal-line t-muted">[INFO] 2026-06-09 04:17:00 - Inicializando periféricos de vuelo...</p>
-                    <p class="terminal-line t-muted">[INFO] 2026-06-09 04:17:01 - GPS Enlazado: 12 satélites. Precisión 0.8m</p>
-                    <p class="terminal-line t-muted">[INFO] 2026-06-09 04:17:02 - Cargando pesos de red neuronal YOLOv8n_agri.onnx...</p>
-                    <p class="terminal-line t-green">[SUCCESS] Red neuronal cargada en memoria RAM. Tiempo de carga: 412ms</p>
-                    <p class="terminal-line t-muted">[INFO] 2026-06-09 04:17:03 - Despegue autónomo autorizado. Altitud objetivo: 15 metros.</p>
-                    <p class="terminal-line t-green">&gt;&gt; VUELO EN CURSO - Altitud: 15.1m | Velocidad: 4.2m/s | Batería: 89%</p>
-                    <!-- Líneas dinámicas se generarán por Javascript -->
+                <div class="terminal-body font-mono" id="terminalConsole">
+                    <p class="terminal-line t-muted">&gt; System initialized. Awaiting RF command link...</p>
                 </div>
                 <div class="terminal-controls">
-                    <button class="btn btn-secondary btn-sm" id="btnStartTelemetry">Iniciar Vuelo Simulado</button>
-                    <button class="btn btn-tertiary btn-sm" id="btnClearTelemetry" disabled>Limpiar Consola</button>
-                    <div class="simulation-status">
-                        Estado: <span id="statusIndicator" class="status-off">Apagado</span>
+                    <button class="btn btn-primary btn-sm font-mono" id="btnStartTelemetry">RUN SIMULATION</button>
+                    <button class="btn btn-secondary btn-sm font-mono" id="btnClearTelemetry" disabled>CLEAR LOGS</button>
+                    <div class="simulation-status font-mono">
+                        STATUS: <span id="statusIndicator" class="status-off">STANDBY</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Básico -->
+    <!-- Footer Minimalista -->
     <footer class="footer-container">
         <div class="footer-content max-width-container">
             <div class="footer-brand">
                 <a href="#" class="logo">
-                    <span class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                    </span>
-                    <span class="logo-text">Blobe</span>
+                    <span class="logo-text">BLOBE</span>
                 </a>
-                <p class="footer-desc">Tecnología de frontera para el desarrollo agrícola inteligente.</p>
+                <p class="footer-desc">Presentación de proyecto final de ingeniería. Procesamiento Edge AI autónomo aplicado a la agricultura de precisión.</p>
             </div>
-            <div class="footer-links-group">
-                <h4 class="footer-heading">Secciones</h4>
-                <a href="#hero">Inicio</a>
-                <a href="#tecnica">Arquitectura</a>
-                <a href="#beneficios">Beneficios</a>
-                <a href="#telemetria">Telemetría</a>
+            <div class="footer-links-group font-mono">
+                <h4 class="footer-heading">ENLACES</h4>
+                <a href="#hero">00 // INICIO</a>
+                <a href="#tecnica">01 // ARQUITECTURA</a>
+                <a href="#beneficios">02 // BENEFICIOS</a>
+                <a href="#telemetria">03 // SIMULADOR</a>
             </div>
-            <div class="footer-links-group">
-                <h4 class="footer-heading">Academia</h4>
-                <span class="footer-info">Presentación de Proyecto Final</span>
-                <span class="footer-info">Ingeniería Mecatrónica / Electrónica</span>
-                <span class="footer-info">Universidad de Origen</span>
+            <div class="footer-links-group font-mono">
+                <h4 class="footer-heading">DATOS ACADÉMICOS</h4>
+                <span class="footer-info">PROYECTO FINAL DE INGENIERÍA</span>
+                <span class="footer-info">FACULTAD DE INGENIERÍA</span>
+                <span class="footer-info">MECATRÓNICA / ELECTRÓNICA</span>
             </div>
         </div>
-        <div class="footer-bottom max-width-container">
-            <p>&copy; 2026 Proyecto Blobe. Desarrollado con propósitos de ingeniería agrícola. Todos los derechos reservados.</p>
+        <div class="footer-bottom max-width-container font-mono">
+            <p>&copy; 2026 BLOBE DRONE PROJECT. ALL RIGHTS RESERVED.</p>
+            <p>DESIGNED FOR HIGH PERFORMANCE AGRICULTURAL SYSTEMS.</p>
         </div>
     </footer>
 
